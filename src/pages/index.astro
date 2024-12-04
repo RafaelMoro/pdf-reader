@@ -1,11 +1,23 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Welcome from "../components/Welcome.astro";
+import Layout from "../layouts/Layout.astro";
+import App from "../components/App.svelte";
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Welcome />
+  <div
+    class="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"
+  >
+  </div>
+  <main class="grid place-content-center min-h-screen w-screen">
+    <h1 class="text-6xl opacity-70 font-bold text-white text-center pb-10">
+      Chat with PDF
+    </h1>
+    <section class="container w-[1000px] max-w-xl h-64">
+      <App client:idle />
+    </section>
+  </main>
 </Layout>
