@@ -8,3 +8,7 @@ export const APP_STATUS = {
 }
 
 export const appStatusCheck = writable(APP_STATUS.INIT);
+
+export const setAppStatusLoading = () => {
+  appStatusCheck.set(APP_STATUS.LOADING);
+}
