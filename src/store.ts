@@ -12,3 +12,11 @@ export const appStatusCheck = writable(APP_STATUS.INIT);
 export const setAppStatusLoading = () => {
   appStatusCheck.set(APP_STATUS.LOADING);
 }
+
+export const setAppStautsError = () => {
+  appStatusCheck.set(APP_STATUS.ERROR);
+}
+
+export const setAppStautsChatMode = () => {
+  appStatusCheck.set(APP_STATUS.CHAT_MODE);
+}
