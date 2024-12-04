@@ -1,1 +1,5 @@
-<h1 class="text-white">App</h1>
+<script>
+  import { Progressbar } from "flowbite-svelte";
+</script>
+
+<Progressbar progress="50" />
