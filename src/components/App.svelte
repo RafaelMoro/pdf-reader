@@ -17,10 +17,3 @@
     Hubo un error en la app.
   </Alert>
 {/if}
-
-<div class="mt-6">
-  <Alert color="red">
-    <span class="font-medium">Danger alert!</span>
-    Change a few things up and try submitting again.
-  </Alert>
-</div>
