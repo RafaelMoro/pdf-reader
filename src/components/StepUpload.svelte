@@ -13,29 +13,34 @@
   };
 
   async function handleFilesSelect(e) {
-    const { acceptedFiles, fileRejections } = e.detail;
-    console.log(acceptedFiles);
-    files.accepted = [...files.accepted, ...acceptedFiles];
-    files.rejected = [...files.rejected, ...fileRejections];
+    try {
+      const { acceptedFiles, fileRejections } = e.detail;
+      files.accepted = [...files.accepted, ...acceptedFiles];
+      files.rejected = [...files.rejected, ...fileRejections];
 
-    if (acceptedFiles.length > 0) {
-      setAppStatusLoading();
+      if (acceptedFiles.length > 0) {
+        setAppStatusLoading();
 
-      const formData = new FormData();
-      formData.append("file", acceptedFiles[0]);
+        const formData = new FormData();
+        formData.append("file", acceptedFiles[0]);
 
-      const rest = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+        const rest = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        console.log("rest response api", rest);
 
-      if (!rest.ok) {
-        setAppStautsError();
-        return;
+        if (!rest.ok) {
+          setAppStautsError();
+          return;
+        }
+
+        const result = await rest.json();
+        setAppStautsChatMode();
       }
-
-      const result = await rest.json();
-      setAppStautsChatMode();
+    } catch (error) {
+      console.error(error);
+      setAppStautsError();
     }
   }
 </script>
