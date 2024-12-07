@@ -1,9 +1,10 @@
 <script>
-  import { Input, Label } from "flowbite-svelte";
-  import { appStatusInfo } from "../store";
+  import { Input, Label, Spinner } from "flowbite-svelte";
+  import { appStatusInfo, setAppStautsError } from "../store";
   const { id, url, pages } = $appStatusInfo;
 
   let loading = false;
+  let answer = "";
 
   const numOfImagesToShow = Math.min(pages, 4);
   const images = Array.from({ length: numOfImagesToShow }, (_, i) => {
@@ -13,7 +14,40 @@
       .replace(".pdf", ".jpg");
   });
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      loading = true;
+
+      const question = event.target.question.value;
+
+      // No hace falta usar un catch porque si obtenemos un 404, 500, etc, lo obtendremos en !res.ok
+      // El catch es solo si hay un error de conexion o un error muy cañon
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          question,
+        }),
+      });
+
+      if (!res.ok) {
+        console.error(res);
+        return;
+      }
+
+      const { answer: apiAnswer } = await res.json();
+      answer = apiAnswer;
+    } catch (error) {
+      console.error(error);
+      setAppStautsError();
+    } finally {
+      loading = false;
+    }
+  };
 </script>
 
 <div class="grid grid-cols-4 gap-2">
@@ -42,3 +76,19 @@
     />
   </div>
 </form>
+
+{#if loading}
+  <div class="mt-4 flex justify-center items-center flex-col gap-y-2">
+    <Spinner />
+    <p class="opacity-75">Esperando respuesta...</p>
+  </div>
+{/if}
+
+{#if answer}
+  <div class="mt-4 flex justify-center items-center flex-col gap-y-2">
+    <p class="text-sm font-medium text-gray-900 dark:text-gray-300">
+      Respuesta:
+    </p>
+    <p class="text-sm text-gray-700 dark:text-gray-400">{answer}</p>
+  </div>
+{/if}
