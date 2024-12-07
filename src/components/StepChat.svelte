@@ -24,26 +24,46 @@
       searchParams.append("id", id);
       searchParams.append("question", question);
 
-      // No hace falta usar un catch porque si obtenemos un 404, 500, etc, lo obtendremos en !res.ok
-      // El catch es solo si hay un error de conexion o un error muy cañon
-      const res = await fetch(`/api/ask?${searchParams.toString()}`, {
-        // method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // body: JSON.stringify({
-        //   id,
-        //   question,
-        // }),
-      });
+      // Esto se usa solo con streaming the datos.
+      const eventSource = new EventSource(
+        `/api/ask?${searchParams.toString()}`
+      );
 
-      if (!res.ok) {
-        console.error(res);
-        return;
-      }
+      eventSource.onmessage = (event) => {
+        loading = false;
+        const incomingData = JSON.parse(event.data);
 
-      const { response } = await res.json();
-      answer = response;
+        if (incomingData === "__END__") {
+          eventSource.close();
+          return;
+        }
+        answer = +incomingData;
+      };
+
+      /**
+       * No hace falta usar un catch porque si obtenemos un 404, 500, etc, lo obtendremos en !res.ok
+       * El catch es solo si hay un error de conexion o un error muy cañon
+       */
+
+      // Este se usa si no se hace streaming de datos
+      // const res = await fetch(`/api/ask?${searchParams.toString()}`, {
+      //   // method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   // body: JSON.stringify({
+      //   //   id,
+      //   //   question,
+      //   // }),
+      // });
+
+      // if (!res.ok) {
+      //   console.error(res);
+      //   return;
+      // }
+
+      // const { response } = await res.json();
+      // answer = response;
     } catch (error) {
       console.error(error);
       setAppStautsError();
