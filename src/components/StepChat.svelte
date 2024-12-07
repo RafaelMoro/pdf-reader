@@ -20,18 +20,21 @@
       loading = true;
 
       const question = event.target.question.value;
+      const searchParams = new URLSearchParams();
+      searchParams.append("id", id);
+      searchParams.append("question", question);
 
       // No hace falta usar un catch porque si obtenemos un 404, 500, etc, lo obtendremos en !res.ok
       // El catch es solo si hay un error de conexion o un error muy cañon
-      const res = await fetch("/api/ask", {
-        method: "POST",
+      const res = await fetch(`/api/ask?${searchParams.toString()}`, {
+        // method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          id,
-          question,
-        }),
+        // body: JSON.stringify({
+        //   id,
+        //   question,
+        // }),
       });
 
       if (!res.ok) {
@@ -39,8 +42,8 @@
         return;
       }
 
-      const { answer: apiAnswer } = await res.json();
-      answer = apiAnswer;
+      const { response } = await res.json();
+      answer = response;
     } catch (error) {
       console.error(error);
       setAppStautsError();
