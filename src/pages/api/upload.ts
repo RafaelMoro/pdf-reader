@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 // import { createReadStream } from "streamifier";
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
 
 cloudinary.config({ 
   cloud_name: 'dvhrooio0', 
@@ -10,7 +10,7 @@ cloudinary.config({
 
 const uploadStream = async (buffer: Uint8Array, options: {
   folder: string
-}) => {
+}): Promise<UploadApiResponse > => {
   try {
     return new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(options, (error, result) => {
@@ -22,7 +22,7 @@ const uploadStream = async (buffer: Uint8Array, options: {
       // createReadStream(buffer).pipe(theTransformStream)
     })
   } catch (error) {
-    console.error(error);
+    return Promise.reject(error)
   }
 }
 
@@ -39,7 +39,16 @@ export const POST: APIRoute = async ({ request }: { request: Request }) => {
     const result = await uploadStream(unit8Array, {
       folder: "pdf",
     });
-    return new Response(JSON.stringify(result));
+    const {
+      asset_id: id,
+      secure_url: url,
+      pages,
+    } = result;
+    return new Response(JSON.stringify({
+      id,
+      url,
+      pages,
+    }));
   } catch (error) {
     return new Response(JSON.stringify(error), { status: 500 });
   }

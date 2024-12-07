@@ -35,8 +35,8 @@
           return;
         }
 
-        const result = await rest.json();
-        setAppStautsChatMode();
+        const { id, url, pages } = await rest.json();
+        setAppStautsChatMode({ id, url, pages });
       }
     } catch (error) {
       console.error(error);
